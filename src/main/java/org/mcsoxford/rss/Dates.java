@@ -18,6 +18,7 @@ package org.mcsoxford.rss;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import org.apache.http.impl.cookie.*;
 
 /**
  * Internal helper class for date conversions.
@@ -29,8 +30,7 @@ final class Dates {
   /**
    * @see <a href="http://www.ietf.org/rfc/rfc0822.txt">RFC 822</a>
    */
-  private static final SimpleDateFormat RFC822 = new SimpleDateFormat(
-      "EEE, dd MMM yyyy HH:mm:ss Z", java.util.Locale.ENGLISH);
+  //private static final SimpleDateFormat RFC822 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", java.util.Locale.US);
 
   /* Hide constructor */
   private Dates() {}
@@ -41,12 +41,21 @@ final class Dates {
    * @throws RSSFault if the string is not a valid RFC 822 date/time
    */
   static java.util.Date parseRfc822(String date) {
+	/*
     try {
       return RFC822.parse(date);
     } catch (ParseException e) {
-      throw new RSSFault(e);
+      //throw new RSSFault(e);
+      return null;	
     }
+    */
+	try {
+		// The apache one's more reliable.. Android below 4.2 has some issue parsing dates with SimpleDateFormat 
+		return DateUtils.parseDate(date);
+	}
+	catch (DateParseException dpe) {
+		throw new RSSFault(dpe);
+	}
   }
-
 }
 
